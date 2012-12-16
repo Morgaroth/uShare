@@ -30,15 +30,16 @@ show_help(){
   echo "  --prefix=PREFIX             install in PREFIX [$PREFIX]"
   echo "  --bindir=DIR                install binaries in DIR [PREFIX/bin]"
   echo "  --sysconfdir=DIR            configuration files DIR [PREFIX/etc]"
-  echo "  --localedir=DIR             use locales from DIR [PREFIX/share/locale]"
+  echo "  --datadir=DIR               arch-independent data DIR [PREFIX/share]"
+  echo "  --localedir=DIR             use locales from DIR [DATADIR/locale]"
+  echo "  --mandir=DIR                man documentation DIR [DATADIR/man]"
   echo ""
   echo "Extended options:"
-  echo "  --enable-dlna               enable DLNA support through libldna"
-  echo "  --disable-dlna              disable DLNA support"
   echo "  --disable-nls               do not use Native Language Support"
+  echo "  --enable-fam                enable File Alteration Monitor support"
+  echo "  --disable-fam               disable File Alteration Monitor support"
   echo ""
   echo "Search paths:"
-  echo "  --with-libupnp-dir=DIR      check for libupnp installed in DIR"
   echo "  --with-libdlna-dir=DIR      check for libdlna installed in DIR"
   echo ""
   echo "Advanced options (experts only):"
@@ -292,8 +293,10 @@ logfile="config.log"
 PREFIX="/usr/local"
 bindir='${PREFIX}/bin'
 sysconfdir='${PREFIX}/etc'
-localedir='${PREFIX}/share/locale'
-dlna="no"
+datadir='${PREFIX}/share'
+localedir='${datadir}/locale'
+mandir='${datadir}/man'
+fam="no"
 nls="yes"
 cc="gcc"
 make="make"
@@ -408,17 +411,19 @@ for opt do
   ;;
   --sysconfdir=*) sysconfdir="$optval";
   ;;
+  --datadir=*) datadir="$optval";
+  ;;
   --localedir=*) localedir="$optval";
   ;;
-  --with-libupnp-dir=*) libupnpdir="$optval";
+  --mandir=*) mandir="$optval";
   ;;
   --with-libdlna-dir=*) libdlnadir="$optval";
   ;;
   --disable-nls) nls="no"
   ;;
-  --enable-dlna) dlna="yes"
+  --enable-fam) fam="yes"
   ;;
-  --disable-dlna) dlna="no"
+  --disable-fam) fam="no"
   ;;
   --enable-debug) debug="yes"
   ;;
@@ -628,42 +633,28 @@ echolog "Checking for iconv ..."
 check_lib iconv.h iconv "" && add_cflags -DHAVE_ICONV
 
 #################################################
-#   check for libupnp and friends (mandatory)
+#   check for libdlna (mandatory)
 #################################################
-if [ -n "$libupnpdir" ]; then
-  check_cflags -I$libupnpdir
-  check_ldflags -L$libupnpdir
+libdlna_min_version="0.3.0"
+echolog "Checking for libdlna >= $libdlna_min_version ..."
+if [ -n "$libdlnadir" ]; then
+  check_cflags -I$libdlnadir
+  check_ldflags -L$libdlnadir
 fi
-
-echolog "Checking for libixml ..."
-check_lib upnp/ixml.h ixmlRelaxParser -lixml || die "Error, can't find libixml !"
-
-echolog "Checking for libthreadutil ..."
-check_lib upnp/ThreadPool.h ThreadPoolAdd "-lthreadutil -lpthread" || die "Error, can't find libthreadutil !"
+check_lib dlna.h dlna_register_all_media_profiles -ldlna || die "Error, can't find libdlna (install it) !"
+check_lib_version libdlna $libdlna_min_version || die "Error, libdlna < $libdlna_min_version !"
+add_cflags `pkg-config libdlna --cflags`
+add_extralibs `pkg-config libdlna --libs`
 add_extralibs -lpthread
 
-libupnp_min_version="1.4.2"
-echolog "Checking for libupnp >= $libupnp_min_version ..."
-check_lib upnp/upnp.h UpnpSetMaxContentLength -lupnp || die "Error, can't find libupnp !"
-check_lib_version libupnp $libupnp_min_version || die "Error, libupnp < $libupnp_min_version !"
-add_cflags `pkg-config libupnp --cflags`
-add_extralibs `pkg-config libupnp --libs`
-
 #################################################
-#   check for libdlna (mandatory if enabled)
+#   check for libfam
 #################################################
-if test "$dlna" = "yes"; then
-  libdlna_min_version="0.2.1"
-  echolog "Checking for libdlna >= $libdlna_min_version ..."
-  if [ -n "$libdlnadir" ]; then
-    check_cflags -I$libdlnadir
-    check_ldflags -L$libdlnadir
-  fi
-  check_lib dlna.h dlna_register_all_media_profiles -ldlna || die "Error, can't find libdlna (install it or use --disable-dlna) !"
-  check_lib_version libdlna $libdlna_min_version || die "Error, libdlna < $libdlna_min_version !"
-  add_cflags -DHAVE_DLNA
-  add_cflags `pkg-config libdlna --cflags`
-  add_extralibs `pkg-config libdlna --libs`
+if test "$fam" = "yes"; then
+  echolog "Checking for libfam ..."
+  check_lib fam.h FAMOpen -lfam || die "Error, can't find libfam (install it or use --disable-fam) !"
+  add_cflags -DHAVE_FAM -pthread
+  add_extralibs -lpthread
 fi
 
 #################################################
@@ -672,14 +663,14 @@ fi
 echolog ""
 echolog "uShare: configure is OK"
 echolog "  version            $VERSION"
-echolog "  using libupnp      `pkg-config libupnp --modversion`"
-test $dlna = yes && echolog "  using libdlna      `pkg-config libdlna --modversion`"
+echolog "  using libdlna      `pkg-config libdlna --modversion`"
 echolog "configuration:"
 echolog "  install prefix     $PREFIX"
 echolog "  configuration dir  $sysconfdir"
+echolog "  data dir           $datadir"
 echolog "  locales dir        $localedir"
+echolog "  mans dir           $mandir"
 echolog "  NLS support        $nls"
-echolog "  DLNA support       $dlna"
 echolog "  C compiler         $cc"
 echolog "  STRIP              $strip"
 echolog "  make               $make"
@@ -703,10 +694,11 @@ echo "# Automatically generated by configure - do not modify!" > $CONFIGFILE
 append_config "VERSION=$VERSION"
 
 append_config "PREFIX=$PREFIX"
-append_config "prefix=\$(DESTDIR)\$(PREFIX)"
-append_config "bindir=\$(DESTDIR)$bindir"
-append_config "sysconfdir=\$(DESTDIR)$sysconfdir"
-append_config "localedir=\$(DESTDIR)$localedir"
+append_config "prefix=\$(PREFIX)"
+append_config "bindir=$bindir"
+append_config "sysconfdir=$sysconfdir"
+append_config "datadir=$datadir"
+append_config "localedir=$localedir"
 
 append_config "MAKE=$make"
 append_config "CC=$cc"

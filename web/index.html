@@ -18,6 +18,21 @@
     <meta name="author" content="Benjamin Zores"/>
     <meta name="robots" content="index, follow"/>
     <meta name="keywords" content="computer, OS, Linux, UPnP, MediaServer, A/V, DLNA, embedded, multimedia, HTPC, home, theater, movie, audio, video, media, standalone, free, software, open, source, mpeg, mp3, divx, xvid, matroska, ogg, vorbis, PC, ushare, geexbox, geexbox.org"/>
+
+    <!-- Google Analytics stats -->
+    <script type="text/javascript">
+      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+      var pageTracker = _gat._getTracker("UA-3497964-2");
+      pageTracker._initData();
+      pageTracker._trackPageview();
+    </script>
+    <script type="text/javascript">
+      window.google_analytics_uacct = "UA-3497964-2";
+    </script>
+
     <style type="text/css">
       body { margin: 10px; padding: 0; font : 0.8em Verdana,Arial,Helvetica,sans-serif; }
       pre { font-size : 1.1em; background-color: rgb(220, 220, 220); padding: 2ex 6ex; border: 1px solid #ccc;}
@@ -40,7 +55,12 @@
       <tt>GeeXboX uShare</tt><br/>
       A free UPnP A/V &amp; DLNA Media Server for Linux
     </h1>
-    
+    <h3>
+      <center>
+        <tt>This page is sponsored by Hosting.com and Top Hosting Center, enterprise level web hosting companies<br/>that specializes in <a href="http://www.hosting.com/">business web hosting</a> and <a href="http://www.tophostingcenter.com/cloudservers.html">cloud server</a> technology.</tt>
+        </center>
+    </h3>
+
     <fieldset id="contents">
       <legend>Contents</legend>
       <ul>
@@ -78,6 +98,8 @@
       Latest News
     </h2>
     <div>
+      <b>By lack of spare time, motivation and interest, uShare development is currently discontinued (this may change though). Don't expect release anytime soon :-(</b><br/>
+      <br/>
       Latest release of uShare is 1.1a.<br />
       <br/>
       ChangeLog:
@@ -137,7 +159,7 @@
 
       <h4>The following DLNA library is required for proper DLNA support:</h4>
       <dl class="list">
-        <dt>libdlna, 0.2.1 or later.</dt>
+        <dt>libdlna, 0.2.3.</dt>
         <dd>
         The libdlna library is used to provides DLNA profiles informations. libdlna can be downloaded from <a href="http://libdlna.geexbox.org/">http://libdlna.geexbox.org/</a>.
         </dd>
@@ -228,19 +250,6 @@ ushare -c /shares1 --content=/shares2</pre>
       Sources can be downloaded <a href="http://ushare.geexbox.org/releases/ushare-1.1a.tar.bz2">here</a>.
     </p>
     <dl>
-      <dt>Ubuntu Package</dt>
-      <dd>
-      If you're using Ubuntu 7.10 (Gutsy) GNU/Linux distribution, you can also grab the binaries for your architecture :
-      <ul>
-        <li>i386 arch : <a href="http://www.geexbox.org/debian/pool/main/ushare/ushare_1.1-0ubuntu1_i386.deb">ushare package</a>.</li>
-        <li>amd64 arch : <a href="http://www.geexbox.org/debian/pool/main/ushare/ushare_1.1-0ubuntu1_amd64.deb">ushare package</a>.</li>
-      </ul>
-      uShare is also available through <b>apt-get</b>. Simply add the following line to your <i>/etc/apt/sources.list</i> file :
-      <pre class="code">deb http://www.geexbox.org/debian/ unstable main</pre>
-      and install ushare with :
-      <pre class="code">apt-get update &amp;&amp; apt-get install ushare</pre>
-      </dd>
-
       <dt>Fedora Package</dt>
       <dd>
       If you're using Fedora FC4 GNU/Linux distribution, you can also grab the <a href="http://ushare.geexbox.org/releases/ushare-0.9.7-1.fc4.i386.rpm">binary for i386</a>.

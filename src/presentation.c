@@ -18,6 +18,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
 #if HAVE_LANGINFO_CODESET
@@ -40,7 +42,7 @@
 #define CGI_SHARE "share"
 
 int
-process_cgi (struct ushare_t *ut, char *cgiargs)
+process_cgi (ushare_t *ut, char *cgiargs)
 {
   char *action = NULL;
   int refresh = 0;
@@ -119,7 +121,7 @@ process_cgi (struct ushare_t *ut, char *cgiargs)
 }
 
 int
-build_presentation_page (struct ushare_t *ut)
+build_presentation_page (ushare_t *ut)
 {
   int i;
   char *mycodeset = NULL;
@@ -164,8 +166,8 @@ build_presentation_page (struct ushare_t *ut)
   buffer_append (ut->presentation, "</tr>");
   buffer_appendf (ut->presentation, "<b>%s :</b> %s<br/>",
                   _("Device UDN"), ut->udn);
-  buffer_appendf (ut->presentation, "<b>%s :</b> %d<br/>",
-                  _("Number of shared files and directories"), ut->nr_entries);
+  //buffer_appendf (ut->presentation, "<b>%s :</b> %d<br/>",
+  //              _("Number of shared files and directories"), ut->nr_entries);
   buffer_append (ut->presentation, "</center><br/>");
 
   buffer_appendf (ut->presentation,

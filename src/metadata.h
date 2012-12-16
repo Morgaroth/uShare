@@ -21,40 +21,10 @@
 #ifndef _METADATA_H_
 #define _METADATA_H_
 
-#include <upnp/upnp.h>
-#include <upnp/upnptools.h>
-#include <stdbool.h>
-#include <sys/types.h>
-
 #include "ushare.h"
-#include "http.h"
 #include "content.h"
 
-struct upnp_entry_t {
-  int id;
-  char *fullpath;
-#ifdef HAVE_DLNA
-  dlna_profile_t *dlna_profile;
-#endif /* HAVE_DLNA */
-  struct upnp_entry_t *parent;
-  int child_count;
-  struct upnp_entry_t **childs;
-  struct mime_type_t *mime_type;
-  char *title;
-  char *url;
-  off_t size;
-  int fd;
-};
-
-typedef struct xml_convert_s {
-  char charac;
-  char *xml;
-} xml_convert_t;
-
-void free_metadata_list (struct ushare_t *ut);
-void build_metadata_list (struct ushare_t *ut);
-struct upnp_entry_t *upnp_get_entry (struct ushare_t *ut, int id);
-void upnp_entry_free (struct ushare_t *ut, struct upnp_entry_t *entry);
-int rb_compare (const void *pa, const void *pb, const void *config);
+void free_metadata_list (ushare_t *ut);
+void build_metadata_list (ushare_t *ut);
 
 #endif /* _METADATA_H_ */
